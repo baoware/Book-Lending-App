@@ -1,0 +1,431 @@
+{%extends "catalog/base.html" %}
+{% block content %}
+{% load static %}
+
+<style>
+  .leftSide {
+    max-width: 200px;
+  }
+  .fixed-box {
+    height: 150px;
+    overflow-y: auto;
+  }
+  .request-buttons form {
+    display: inline-block;
+    margin-right: 5px;
+  }
+  .rightSide .mb-4 {
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 1rem;
+  }
+  .section-header {
+    font-size: 2rem;
+    cursor: pointer;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  .section-header:hover {
+    color: #000;
+  }
+  .no-transitions .collapse,
+  .no-transitions .collapsing {
+    transition: none !important;
+  }
+</style>
+
+<div class="container">
+  <h1 class="mb-0 ms-4">My Account</h1>
+  <hr class="mt-0" style="border: 1px solid gray; width: 100%;">
+
+  <div class="row">
+    <!-- Left Side: Profile and Upload Form -->
+    <div class="col-md-3">
+      <div class="leftSide">
+
+        {% if user.userprofile.profile_pic %}
+          <img src="{{ user.userprofile.profile_pic.url }}" alt="Profile Picture" class="img-fluid rounded" style="width:200px;height:auto;">
+        {% else %}
+          <img src="{% static 'users/images/profile.png' %}" alt="Default Profile Picture" class="img-fluid rounded" style="width:200px;height:auto;">
+        {% endif %}
+
+        {% if is_librarian %}
+          <p>You are a Librarian!</p>
+        {% elif is_patron %}
+          <p>You are a Patron!</p>
+        {% endif %}
+        {% if user.userprofile.full_name %}
+            <p>You are logged in as {{user.userprofile.full_name}} </p>
+        {% endif %}
+        {% if user.userprofile.join_date %}
+            <p>You joined on {{user.userprofile.join_date}} </p>
+        {% endif %}
+        {% if user.email %}
+            <p>Email: {{user.email}} </p>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-custom active text-white">Upload Profile Picture</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Side: Requests and Collections -->
+    <div class="col-md-9">
+      <div class="rightSide">
+
+        
+        <!-- Requests Section -->
+        <div class="mb-4">
+          <h3 class="section-header" data-bs-toggle="collapse" data-bs-target="#pendingRequests" aria-expanded="false" aria-controls="pendingRequests">
+            Borrow Requests
+            <span class="badge bg-secondary align-middle ms-2">
+              {{ pending_requests|length}}
+            </span>
+          </h3>
+          <div class="collapse" id="pendingRequests">
+            <div class="fixed-box">
+              <ul class="list-group">
+                  {% for request in pending_requests %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                      {% if request.status == 'waiting'%}
+                        <div>
+                          Request for "{{ request.book.title }}" - Pick-up Time: {{ request.pickup_datetime }}
+                        </div>
+                        <div class="request-buttons">
+                          {% if request.book.status == 'Available'%}
+                              <button type="button" class="btn btn-warning btn-sm" disabled>Pending</button>
+                          {% else %}
+                              <button type="button" class="btn btn-warning btn-sm" disabled>Currently checked out</button>
+                          {% endif %}
+                        </div>
+                      {% elif request.status == 'approved'%}
+                        <div>
+                          Request for "{{ request.book.title }}"
+                        </div>
+                        <div class="request-buttons">
+                          <button type="button" class="btn btn-success btn-sm" disabled>Pick-up: {{request.pickup_datetime}} at {{request.book.location}}</button>
+                          <button type="button" class="btn btn-secondary btn-sm" disabled>Due: {{ request.due_date }}</button>
+                        </div>
+                      {% else %}
+                        <div>
+                          Request for "{{ request.book.title }}"
+                        </div>
+                        <div class="request-buttons">
+                          <button type="button" class="btn btn-danger btn-sm" disabled>{{ request.status|capfirst }}</button>
+                          <a href="{% url 'catalog:item' request.book.id %}" class="btn btn-outline-primary btn-sm">
+                            Make a new request
+                          </a>
+                          <form method="post" action="" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_request_id" value="{{ request.id }}">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to clear this request?');">
+                              Clear Request
+                            </button>
+                          </form>
+                        </div>
+                      {% endif %}
+                      </li>
+                  {% empty %}
+                    <li class="list-group-item">No pending requests.</li>
+                  {% endfor %}
+
+              </ul>
+            </div>
+          </div>
+        </div> 
+
+
+        {% if is_librarian %}
+          <!-- Requests Section -->
+          <div class="mb-4">
+            <h3 class="section-header" data-bs-toggle="collapse" data-bs-target="#incomingRequests" aria-expanded="false" aria-controls="incomingRequests">
+              Incoming Requests
+              <span class="badge bg-secondary align-middle ms-2">
+                {{ incoming_requests|length}}
+              </span>
+            </h3>
+            <div class="collapse" id="incomingRequests">
+              <div class="fixed-box">
+                <ul class="list-group">
+                    {% for request in incoming_requests %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <div>
+                            Request from {{ request.patron.username }} for "{{ request.book.title }}"
+                          </div>
+                          <div class="request-buttons">
+                            {% if request.status == 'waiting' %}
+                              <form method="post" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="approve_request_id" value="{{ request.id }}">
+                                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to approve this request?');">
+                                  Approve
+                                </button>
+                              </form>
+                              <form method="post" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="deny_request_id" value="{{ request.id }}">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to deny this request?');">
+                                  Deny
+                                </button>
+                              </form>
+                            {% elif request.status == 'approved' %}
+                              <button type="button" class="btn btn-success btn-sm" disabled>Pick-up: {{request.pickup_datetime}} at {{request.book.location}}</button>
+                              <button type="button" class="btn btn-secondary btn-sm" disabled>Due: {{ request.due_date|date:"F j, Y" }}</button>
+                              <form method="post" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="mark_returned_id" value="{{ request.id }}">
+                                <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Mark this book as returned and expire the request?');">
+                                  Mark Returned
+                                </button>
+                              </form>
+                            {% else %}
+                              <button type="button" class="btn btn-danger btn-sm" disabled>{{ request.status|capfirst }}</button>
+                              <form method="post" action="" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_request_id" value="{{ request.id }}">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to clear this request?');">
+                                  Clear Request
+                                </button>
+                              </form>
+                            {% endif %}
+
+                          </div>
+                        </li>
+                    {% empty %}
+                      <li class="list-group-item">No incoming requests.</li>
+                    {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+
+
+        <!-- Collection View Requests -->
+        <div class="mb-4">
+          <h3 class="section-header" data-bs-toggle="collapse" data-bs-target="#colViewRequests" aria-expanded="false" aria-controls="colViewRequests">
+            Collection View Requests
+            <span class="badge bg-secondary align-middle ms-2">
+              {% if is_patron %}
+                {{ pending_col_requests|length}}
+              {% elif is_librarian %}
+                {{ incoming_col_requests|length}}
+              {% else %}
+              {% endif %}
+            </span>
+          </h3>
+          <div class="collapse" id="colViewRequests">
+            <div class="fixed-box">
+              <ul class="list-group">
+                <!-- Patron -->
+                {% if is_patron %}
+                  {% for request in pending_col_requests %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                      {% if request.status == 'waiting'%}
+                        <div>
+                          Request to view "{{ request.collection.title }}"
+                        </div>
+                        <div class="request-buttons">
+                          <button type="button" class="btn btn-warning btn-sm" disabled>Pending</button>
+                        </div>
+                      {% elif request.status == 'approved'%}
+                        <div>
+                          Request to view "{{ request.collection.title }}"
+                        </div>
+                        <div class="request-buttons">
+                          <button type="button" class="btn btn-success btn-sm" disabled>Approved</button>
+                          <a href="{% url 'catalog:collection_books_view' request.collection.id %}" class="btn btn-outline-primary btn-sm">
+                            Go to Collection
+                          </a>
+                        </div>
+                      {% else %}
+                        <div>
+                          Request to view "{{ request.collection.title }}"
+                        </div>
+                        <div class="request-buttons">
+                          <button type="button" class="btn btn-danger btn-sm" disabled>{{ request.status|capfirst }}</button>
+                        </div>
+                      {% endif %}
+                      </li>
+                  {% empty %}
+                    <li class="list-group-item">No pending requests.</li>
+                  {% endfor %}
+
+                <!-- Librarian -->
+                {% elif is_librarian %}
+                  {% for request in incoming_col_requests %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                          Request from {{ request.patron.username }} to view "{{ request.collection.title }}"
+                        </div>
+                        <div class="request-buttons">
+                          {% if request.status == 'waiting' %}
+                            <form method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="approve_col_req_id" value="{{ request.id }}">
+                              <button class="btn btn-success btn-sm">Approve</button>
+                            </form>
+                            <form method="post" class="ms-1">
+                              {% csrf_token %}
+                              <input type="hidden" name="deny_col_req_id" value="{{ request.id }}">
+                              <button class="btn btn-danger btn-sm">Deny</button>
+                            </form>
+                          {% elif request.status == 'approved' %}
+                            <button type="button" class="btn btn-success btn-sm" disabled>Approved</button>
+                          {% else %}
+                            <button type="button" class="btn btn-danger btn-sm" disabled>{{ request.status|capfirst }}</button>
+                          {% endif %}
+                        </div>
+                      </li>
+                  {% empty %}
+                    <li class="list-group-item">No incoming requests.</li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Collections Section -->
+        <div class="mb-4">
+          <h3 class="section-header" data-bs-toggle="collapse" data-bs-target="#collections" aria-expanded="false" aria-controls="collections">
+            My Collections
+            <span class="badge bg-secondary align-middle ms-2">
+              {{ collections|length}}
+            </span>
+          </h3>
+          <div class="collapse" id="collections">
+            <div class="fixed-box">
+              <ul class="list-group">
+                {% for collection in collections %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      {{ collection.title }}
+                    </div>
+                    <a href="{% url 'catalog:edit_collection' collection.id %}" class="btn btn-custom active text-white">
+                      Edit
+                    </a>
+                  </li>
+                {% empty %}
+                  <li class="list-group-item">No collections created.</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Books Section -->
+        {% if is_librarian %}
+        <div class="mb-4">
+          <h3 class="section-header" data-bs-toggle="collapse" data-bs-target="#books" aria-expanded="false" aria-controls="books">
+            My Books
+            <span class="badge bg-secondary align-middle ms-2">
+              {{ books|length}}
+            </span>
+          </h3>
+          <div class="collapse" id="books">
+            <div class="fixed-box">
+              <ul class="list-group">
+                {% for book in books %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      {{ book.title }}
+                    </div>
+                    <a href="{% url 'catalog:edit_book' book.id %}" class="btn btn-custom active text-white">
+                      Edit
+                    </a>
+                  </li>
+                {% empty %}
+                  <li class="list-group-item">No books listed.</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% if notifications or col_notifications or due_notifications %}
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {% for notif in notifications %}
+              {% if notif.status == 'approved' %}
+                <p>Your request for <strong>{{ notif.book.title }}</strong> has been <strong style="color: green;">{{ notif.status }}</strong>. Please pick it up at {{ notif.book.location }}, {{ notif.pickup_datetime }}, and return it by {{ notif.due_date }}.</p>
+              {% else %}
+                <p>Your request for <strong>{{ notif.book.title }}</strong> has been <strong style="color: red;">{{ notif.status }}</strong>.</p>
+              {% endif %}
+            {% endfor %}
+            {% for notif in col_notifications %}
+              {% if notif.status == 'approved' %}
+                <p>Your request to view <strong>{{ notif.collection.title }}</strong> has been <strong style="color:green">approved</strong>.</p>
+              {% else %}
+                <p>Your request to view <strong>{{ notif.collection.title }}</strong> has been <strong style="color:red">{{ notif.status }}</strong>.</p>
+              {% endif %}
+            {% endfor %}
+            {% for notif in due_notifications %}
+                <p>{{ notif.book.title}} is <strong style="color: red">due</strong> within 3 days. Please return it by {{ notif.due_date }}.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+        notificationModal.show();
+      });
+    </script>
+  {% endif %}
+  <!-- Persist collapse state -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Turn off transitions
+      document.body.classList.add('no-transitions');
+  
+      const allCollapses = document.querySelectorAll('.collapse');
+      const openSections = JSON.parse(localStorage.getItem('openSections') || '[]');
+  
+      // Restore open sections without animation
+      allCollapses.forEach(el => {
+        if (openSections.includes(el.id)) {
+          new bootstrap.Collapse(el, { toggle: true });
+        }
+      });
+  
+      // Remove the "no-transitions" flag before the next paint
+      window.requestAnimationFrame(() => {
+        document.body.classList.remove('no-transitions');
+      });
+  
+      // Continue listening for show/hide to keep localStorage up to date
+      allCollapses.forEach(el => {
+        el.addEventListener('shown.bs.collapse', () => {
+          const arr = JSON.parse(localStorage.getItem('openSections') || '[]');
+          if (!arr.includes(el.id)) {
+            arr.push(el.id);
+            localStorage.setItem('openSections', JSON.stringify(arr));
+          }
+        });
+        el.addEventListener('hidden.bs.collapse', () => {
+          const arr = JSON.parse(localStorage.getItem('openSections') || '[]');
+          const idx = arr.indexOf(el.id);
+          if (idx > -1) {
+            arr.splice(idx, 1);
+            localStorage.setItem('openSections', JSON.stringify(arr));
+          }
+        });
+      });
+    });
+  </script>
+</div>
+{% endblock content %}

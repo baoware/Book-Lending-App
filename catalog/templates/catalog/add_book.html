@@ -1,0 +1,72 @@
+{% extends "catalog/base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+{% load static %}
+    <div class="container">
+        <h1>Add a New Book</h1>
+        <hr class="mt-0 line-strip" >
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Title</label>
+                {{ form.title }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Isbn</label>
+                   {{ form.isbn|add_class:"form-control" }}
+                     {% for error in form.isbn.errors %}
+                <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.author.id_for_label }}">Author</label>
+                {{ form.author }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Status</label>
+                {{ form.status }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.condition.id_for_label }}">Condition</label>
+                {{ form.condition }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.genre.id_for_label }}">Genre</label>
+                {{ form.genre }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.location.id_for_label }}">Location</label>
+                {{ form.location }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="image-group">
+                <label for="{{ form.description.id_for_label }}">Upload</label>
+                {{ form.cover_image.label_tag }}
+                {{ form.cover_image }}
+                {{ form.cover_image.errors }}
+            </div>
+
+            <div class="image-group mt-4">
+                <label for="{{ form.additional_images.id_for_label }}">Additional Images Upload: </label>
+                {{ form.additional_images }}
+                <small class="form-text text-muted">Hold Ctrl to select multiple files.</small>
+            </div>
+
+            <button type="submit" class="btn btn-custom active text-white" style = "margin-top: 20px">Add Book</button>
+        </form>
+    </div>
+
+{% endblock content %}

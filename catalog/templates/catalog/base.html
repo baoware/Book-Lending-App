@@ -1,0 +1,78 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'users/style.css' %}?{% now 'U' %}">
+<!-- In the <head> -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<!-- Before </body> -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<body class="d-flex flex-column min-vh-100">
+<nav class="navbar navbar-expand-lg custom-navbar">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'users:dashboard' %}">LendABook</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarScroll">
+      <ul class="navbar-nav me-auto my-4 my-lg-3 navbar-nav-scroll d-flex justify-content-end w-100" style="--bs-scroll-height: 100px;">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'catalog:collections' %}">Collections</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'catalog:book_list' %}">Catalog</a>
+        </li>
+          {% if user.is_authenticated and user.userprofile.is_librarian %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'catalog:lend_book' %}">Add A Book</a>
+            </li>
+            <li class ="nav-item">
+                <a class="nav-link" href="{% url 'users:manage_patrons' %}">Manage Patrons</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+                <a class="nav-link" href="{% url 'users:help_page' %}">Help</a>
+            </li>
+          {% if user.is_authenticated and not user.is_superuser and not user.is_staff %}
+
+          <li class="nav-item">
+              <a class="nav-link mx-lg-2" href="{% url 'users:profile'%}">My Profile</a>
+          </li>
+
+          <li class="nav-item">
+              <a class="nav-link mx-lg-2" href="{% url 'users:logout'%}">Logout</a>
+          </li>
+          {% endif %}
+          {% if not user.is_authenticated or user.is_superuser or user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link mx-lg-2" href="{% provider_login_url 'google' %}">Login</a>
+          </li>
+          {% endif %}
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+ <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+<div class="footer mt-auto text-center p-3" style="bottom: 0;  left: 0; width: 100%; text-align: center; padding: 7px; font-size: 12px;">
+    <p>®This is a class project, the system is not monitored, and no real information should be submitted.</p>
+</div>
+</body>
+
+</html>

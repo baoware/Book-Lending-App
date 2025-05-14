@@ -1,0 +1,49 @@
+{% extends "catalog/base.html" %}
+{% block content %}
+{% load static %}
+<h1>All Patrons</h1>
+<hr class="mt-0 line-strip">
+
+<input type="text" id="patron-search" placeholder="Search patrons by name..." autocomplete="off" class="form-control mb-3" style="max-width: 400px;">
+
+<table class="table table-hover align-middle" id="patrons-table">
+  <thead>
+    <tr>
+      <th class="pe-4">Username</th>
+      <th class="pe-4">Email</th>
+      <th class="pe-4">Promote</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for profile in patrons %}
+    <tr>
+      <td>{{ profile.username }}</td>
+      <td>{{ profile.email }}</td>
+      <td>
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="user_id" value="{{ profile.id }}">
+          <button class="btn btn-custom text-white" type="submit">Promote to Librarian</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="3">No patrons found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  document.getElementById('patron-search').addEventListener('input', function() {
+      var filter = this.value.toLowerCase();
+      var rows = document.querySelectorAll('#patrons-table tbody tr');
+      rows.forEach(function(row) {
+          var rowText = row.textContent.toLowerCase();
+          row.style.display = rowText.indexOf(filter) > -1 ? '' : 'none';
+      });
+  });
+  </script>
+
+{% endblock content %}

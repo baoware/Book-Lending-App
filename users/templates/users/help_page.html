@@ -1,0 +1,289 @@
+{% extends "catalog/base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1 class="mb-0 ms-6">Welcome to LendABook: </h1>
+<hr class="mt-0 line-strip2" >
+<nav id="help-navigation" >
+  <ul class = "d-flex">
+    <li><a href="#home">Home & Dashboard</a></li>
+    <li><a href="#patron-borrow">Borrowing a Book (Patrons)</a></li>
+    <li><a href="#librarian-lend">Lending a Book (Librarians)</a></li>
+    <li><a href="#browse-books">Browsing Books</a></li>
+    <li><a href="#create-collections">Creating Collections</a></li>
+      <li><a href="#ratings">Rating and Commenting</a></li>
+    <li><a href="#profile">Customize your Profile</a></li>
+    <li><a href="#drop-pickups">Drop-off and Pickup Locations</a></li>
+      <li><a href="#roles">Patrons & Librarians</a></li>
+
+  </ul>
+</nav>
+
+<p style = "margin-top:50px;">Welcome! Whether you're a <b>Patron</b> or a <b>Librarian</b>, here’s a simple walkthrough of how to use this website to browse, lend, or borrow books.</p>
+
+<section id = "home">
+<h3>🏠 Home & Dashboard</h3>
+<p>Once you log in with your <b>Google account</b>, you’ll land on your <b>dashboard</b>. Your dashboard changes depending on your role:</p>
+
+<ul>
+    <li>
+		<b>Patrons</b> see collections they can browse and items they can request to borrow.
+
+    </li>
+    <li>
+		<b>Librarians</b> see additional buttons to <b>add</b>, <b>edit</b>, or <b>remove</b> items and collections.
+
+    </li>
+    <li>
+    	Your login also automatically creates a <b>User Profile</b> connected to your Google account.
+
+    </li>
+    <li>
+        You can add a <b>profile picture</b> and view your role (Patron or Librarian).
+
+    </li>
+</ul>
+    </section>
+
+<section id = "patron-borrow">
+<h3>📬 Borrowing a Book (Patrons)</h3>
+<ul>
+    <li>
+        	When viewing a book, if it’s available, you’ll see a <b>“Request to Borrow”</b> button.
+
+    </li>
+     <li>
+        	Click the button to send your request to the librarians.
+
+    </li>
+     <li>
+        	You’ll be notified once your request is <b>approved</b> or <b>denied</b>. - If approved, you’ll get instructions on when/where to pick up the item.
+
+    </li>
+</ul>
+        </section>
+
+<section id = "browse-books">
+<h3>🔍 Browsing Books</h3>
+<p>Click <b>“Collections”</b> in the navigation bar to explore all available books:
+</p>
+<p>You’ll see items that are:
+</p>
+<ul>
+    <li>
+        	Not part of any collection (like new arrivals!)
+
+    </li>
+    <li>
+        	Inside <b>public collections</b>
+
+    </li>
+</ul>
+<p>You can also use the <b>filter</b> buttons to narrow down items by:
+</p>
+<ul>
+    <li>
+        	<b>Genre</b> (e.g., Mystery, Fantasy)
+
+    </li>
+    <li>
+       		<b>Status</b> (Available, Checked out)
+
+    </li>
+    <li>
+        	<b>Condition</b> (Like New, Good, etc.)
+
+    </li>
+</ul>
+<p>Use the <b>search bar</b> to find books by title.
+</p>
+<p>Click on any book to view its <b>details page</b>, which includes:
+</p>
+<ul>
+    <li>
+       		The title, author, genre, and a description
+
+    </li>
+    <li>
+        	The book’s <b>status</b> (available or checked out)
+
+    </li>
+    <li>
+        	<b>Ratings and comments</b> from other users
+
+    </li>
+    <li>
+       		A cover image (if provided)
+
+    </li>
+</ul>
+    </section>
+
+<section id = "librarian-lend">
+<h3>🧺 Lending a Book (Librarians)</h3>
+<p>Librarians have an extra button in their dashboard called <b>"Lend an Item"</b>.
+</p>
+<ul>
+    <li>
+        	Fill out the item form: title, author, condition, location, genre, etc.
+
+    </li>
+    <li>
+        	Upload a cover image if you have one.
+
+    </li>
+    <li>
+        	<b>Submit</b> to add the item to the library for others to see and request.
+
+    </li>
+</ul>
+</section>
+
+<section id = "create-collections">
+<h3>🗂️ Creating Collections</h3>
+<p><b>Patrons</b> can create <b>public collections</b> (e.g., “Best Fantasy Books” or “Senior Year Favorites”).
+</p>
+<p><b>Librarians</b> can create both <b>public and private collections</b>:
+</p>
+<ul>
+    <li>
+        	Private collections are only visible to <b>approved users</b>.
+
+    </li>
+    <li>
+        	Items in private collections can’t belong to any other collection.
+
+    </li>
+</ul>
+<p>Each collection includes:
+</p>
+<ul>
+    <li>
+        	A <b>title</b> and <b>description</b>
+
+    </li>
+     <li>
+        	A list of books that belong to it
+
+    </li>
+     <li>
+        	The <b>creator’s name</b> so others know who curated it
+    </li>
+</ul>
+</section>
+
+<section id = "ratings">
+<h3>⭐ Rating and Commenting</h3>
+<p>After reading a book, you can:
+</p>
+<ul>
+    <li>
+        	Leave a <b>star rating</b> (1–5)
+
+    </li>
+    <li>
+       		Add a <b>comment or review</b> for other users to read
+
+    </li>
+</ul>
+<p>This helps build community trust and makes the collection more helpful!
+</p>
+</section>
+
+<section id = "profile">
+<h3>👤 Your Profile Page</h3>
+<p>Go to <b>Profile</b> in the navigation bar to:
+</p>
+<ul>
+    <li>
+        	View your account email and role
+
+    </li>
+    <li>
+       		Upload or change your <b>profile picture</b>
+
+    </li>
+    <li>
+        	See a list of books you’ve requested or borrowed
+
+    </li>
+</ul>
+</section>
+<section id = "drop-pickups">
+<h2>📦 Drop-off and Pickup Locations</h2>
+<p>When borrowing or lending an item, it’s important to know <b>where</b> the exchange happens. Our app is designed to make this as convenient and safe as possible. All items are exchanged at <b>designated campus locations</b>.
+</p>
+
+<h3>📍 Available Locations</h3>
+<p>When adding or browsing items, you’ll see one of the following <b>approved drop-off/pickup locations listed</b>:
+</p>
+<ul>
+    <li>
+        Shannon Library
+    </li>
+    <li>
+        Student Health and Wellness
+    </li>
+    <li>
+        Gibbons
+    </li>
+    <li>
+        Rice Hall
+    </li>
+</ul>
+<p>Each book or item will show its <b>location</b> on its detail page.
+</p>
+</section>
+    <h3>🔁 Returning Items</h3>
+<p>Borrowers will be expected to return items to the <b>same location</b> they were picked up from, unless otherwise coordinated.
+</p>
+<p>Librarians can mark items as “Returned” once they receive them back — this helps keep the library updated and organized.
+</p>
+
+    <section id = "roles">
+<h3>🙋 For Patrons </h3>
+<p>1. Once your borrow request is approved, the item will be <b>delivered to the specified location</b>.
+</p>
+<p>2. You'll receive a notification in your user profile for:
+</p>
+<ul>
+    <li>
+        The <b>location name</b>
+    </li>
+    <li>
+        A brief description of the <b>pickup procedure</b>
+    </li>
+    <li>
+        Any time constraints (e.g., pickup time and due date)
+    </li>
+</ul>
+<p>3. Within 3 days of the item being due, you will receive a reminder notification.
+</p>
+
+<h3>🙋‍♀️For Librarians</h3>
+<p>When lending an item:</p>
+<p>	1. You must <b>choose a pickup location</b> from the dropdown when filling out the "Lend Item" form.
+</p>
+<p>	2. Make sure the item is dropped off <b>on time</b> and clearly marked with:
+</p>
+<ul>
+    <li>
+        The <b>title</b>
+    </li>
+    <li>
+        The <b>borrower's name</b>
+    </li>
+    <li>
+        Any notes about return timing, if needed
+    </li>
+</ul>
+            </section>
+</body>
+
+</html>
+{% endblock %}

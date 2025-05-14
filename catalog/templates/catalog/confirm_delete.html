@@ -1,0 +1,10 @@
+<h3>
+    <a href="{% url 'catalog:collection_books' collection.id %}">
+        {{ collection.title }}
+    </a>
+</h3>
+
+<form action="{% url 'catalog:delete_collection' collection.id %}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this collection?');">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>

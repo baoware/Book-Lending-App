@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comments</title>
+</head>
+<body>
+<h4>Select a Rating: </h4>
+<form method="POST" action="{% url 'catalog:add_comment' book.id %}" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Used website https://iamkate.com/code/star-rating-widget/ --->
+    <div class="rating">
+        <input id="rating1" type="radio" name="rating" value="1">
+        <label for="rating1" class="fa fa-star"></label>
+
+        <input id="rating2" type="radio" name="rating" value="2">
+        <label for="rating2" class="fa fa-star"></label>
+
+        <input id="rating3" type="radio" name="rating" value="3">
+        <label for="rating3" class="fa fa-star"></label>
+
+        <input id="rating4" type="radio" name="rating" value="4">
+        <label for="rating4" class="fa fa-star"></label>
+
+        <input id="rating5" type="radio" name="rating" value="5">
+        <label for="rating5" class="fa fa-star"></label>
+    </div>
+    <div class="form-group">
+        <label for="{{ form.title.id_for_label }}">Comment</label>
+        {{ form.comment }}
+    </div>
+    <button type="submit" class="btn btn-custom active text-white">Add Comment</button>
+</form>
+</body>
+</html>

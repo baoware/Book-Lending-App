@@ -1,0 +1,94 @@
+{% extends "catalog/base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+{% load static %}
+    <div class="container">
+        <h1>Edit a Book</h1>
+        <hr class="mt-0 line-strip">
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Title</label>
+                {{ form.title }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.isbn.id_for_label }}">ISBN</label>
+                {{ form.isbn|add_class:"form-control" }}
+                {% for error in form.isbn.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.author.id_for_label }}">Author</label>
+                {{ form.author }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Status</label>
+                {{ form.status }}
+            </div>
+
+
+            <div class="form-group">
+                <label for="{{ form.condition.id_for_label }}">Condition</label>
+                {{ form.condition }}
+            </div>
+
+
+            <div class="form-group">
+                <label for="{{ form.genre.id_for_label }}">Genre</label>
+                {{ form.genre }}
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="{{ form.location.id_for_label }}">Location</label>
+                {{ form.location }}
+            </div>
+
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="image-group">
+                <label for="{{ form.cover_image.id_for_label }}">Cover Image Upload</label>
+                {{ form.cover_image }}
+
+                {% if book.cover_image %}
+                    <p>Current Cover Image:</p>
+                    <img src="{{ book.cover_image.url }}" alt="Cover Image" class="img-thumbnail" style="max-width: 150px;">
+                {% endif %}
+            </div>
+
+            <div class="image-group mt-4">
+                <label for="{{ form.additional_images.id_for_label }}">Additional Images Upload</label>
+                {{ form.additional_images }}
+                <small class="form-text text-muted">Hold Ctrl (Cmd) to select multiple files.</small>
+
+                {% if additional_images %}
+                    <h3 style="font-size: 15px;">Existing Additional Images:</h3>
+                    <div class="image-gallery d-flex flex-wrap gap-3 mt-2">
+                        {% for image in additional_images %}
+                            <div class="image-item text-center" style="width: 150px;">
+                                <img src="{{ image.image.url }}" alt="{{ image.caption|default:'' }}" class="img-thumbnail" style="max-width: 100%;">
+                                {% if image.caption %}
+                                    <p>{{ image.caption }}</p>
+                                {% endif %}
+                                <a href="{% url 'catalog:delete_book_image' image.id %}" class="btn btn-danger btn-sm mt 4">Delete</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <button type="submit" style = "margin-top:20px;" class="btn btn-custom active text-white mt 2">Save Changes</button>
+
+
+        </form>
+    </div>
+{% endblock content %}
